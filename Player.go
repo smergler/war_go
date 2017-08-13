@@ -2,6 +2,7 @@ package main
 
 import (
     "math/rand"
+    "time"
 )
 
 type Player struct {
@@ -27,7 +28,8 @@ func (h *Player)GetNextCard() Card {
 
 func (h *Player)ShuffleDeck() {
     dest := make([]Card, len(h.Deck))
-    perm := rand.Perm( len(h.Deck))
+    perm := rand.Perm(len(h.Deck))
+    rand.Seed(time.Now().UTC().UnixNano())
     for i, v := range perm {
         dest[v] = h.Deck[i]
     }
