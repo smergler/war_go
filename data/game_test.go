@@ -1,4 +1,4 @@
-package main_test
+package data
 
 import (
     . "github.com/smergler/war_go"

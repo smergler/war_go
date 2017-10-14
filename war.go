@@ -1,17 +1,19 @@
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "github.com/smergler/war_go/data"
+)
 
 func main() {
-
-    the_game := Game{
-        Player {
-            "Player1",
-            []Card{},
+    the_game := data.Game{
+        data.Player{
+            Name: "Player1",
+            Deck: []data.Card{},
         },
-        Player {
-        "Player2",
-        []Card{},
+        data.Player{
+            Name: "Player2",
+            Deck: []data.Card{},
         },
         0,
     }
@@ -27,4 +29,3 @@ func main() {
     }
     fmt.Println("Game Over!! ")
 }
-

@@ -1,9 +1,8 @@
-package main
+package data
 
 import (
     "fmt"
     "time"
-    //"os"
 )
 
 type Game struct {
@@ -62,6 +61,7 @@ func (h *Game) NextTurn() int {
     h.Turn++
     return h.flipCard()
 }
+
 func (h *Game) flipCard() int {
     p1_card := h.P1.GetNextCard()
     p2_card := h.P2.GetNextCard()
@@ -97,7 +97,6 @@ func (h *Game) determineWinner(p1_card, p2_card Card) int {
         return 0
     }
 }
-
 
 func (h *Game) war(cardsInPlay []Card) int{
     fmt.Println("WAR!!!!")
