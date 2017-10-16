@@ -1,7 +1,6 @@
 package data
 
 import (
-    "fmt"
     "time"
 )
 
@@ -57,35 +56,44 @@ func (h *Game) DealCards(deck []Card) {
     return
 }
 
-func (h *Game) NextTurn() int {
+func (h *Game) NextTurn() TurnResult {
     h.Turn++
     return h.flipCard()
 }
 
-func (h *Game) flipCard() int {
+func (h *Game) flipCard() TurnResult {
     p1_card := h.P1.GetNextCard()
     p2_card := h.P2.GetNextCard()
 
-    fmt.Printf("%s's card: %s\n", h.P1.Name, p1_card.String())
-    fmt.Printf("%s's card: %s\n", h.P2.Name, p2_card.String())
+    turn_result := TurnResult{}
+
+    turn_result.Card1 = p1_card
+    turn_result.Player1 = &h.P1
+    turn_result.Card2 = p2_card
+    turn_result.Player2 = &h.P2
+
     winner := h.determineWinner(p1_card, p2_card)
 
     switch winner {
     case 1:
         h.P1.AddToDeck(p1_card)
         h.P1.AddToDeck(p2_card)
+        turn_result.Winner = &h.P1
         break;
     case 2:
         h.P2.AddToDeck(p1_card)
         h.P2.AddToDeck(p2_card)
+        turn_result.Winner = &h.P2
         break;
     default:
-        return h.war([]Card{
+        war_results, winner := h.war([]Card{
             p1_card,
             p2_card,
         })
+        turn_result.WarResults = war_results
+        turn_result.Winner = winner
     }
-    return winner
+    return turn_result
 }
 
 func (h *Game) determineWinner(p1_card, p2_card Card) int {
@@ -98,8 +106,7 @@ func (h *Game) determineWinner(p1_card, p2_card Card) int {
     }
 }
 
-func (h *Game) war(cardsInPlay []Card) int{
-    fmt.Println("WAR!!!!")
+func (h *Game) war(cardsInPlay []Card) ([]WarResult, *Player) {
     for i := 0; i < 3 && h.P1.DeckSize() > 1 && h.P2.DeckSize() > 1; i++ {
         cardsInPlay = append(
             cardsInPlay,
@@ -108,19 +115,22 @@ func (h *Game) war(cardsInPlay []Card) int{
         )
     }
 
-    winner := h.flipCard()
-    var p_winner *Player
-    switch winner {
-    case 1:
-        p_winner = &h.P1
-        break;
-    case 2:
-        p_winner = &h.P2
-        break;
-    }
+    flip_result := h.flipCard()
+
     for i := 0; i < len(cardsInPlay); i++ {
-        p_winner.Deck = append(p_winner.Deck, cardsInPlay[i])
+        flip_result.Winner.Deck = append(flip_result.Winner.Deck, cardsInPlay[i])
     }
-    return winner
+
+    war_results := []WarResult{}
+
+    war_results = append(war_results, WarResult{
+        Card1: flip_result.Card1,
+        Card2: flip_result.Card2,
+    })
+
+    for _, result := range flip_result.WarResults {
+        war_results = append(war_results, result)
+    }
+    return war_results, flip_result.Winner
 }
 
